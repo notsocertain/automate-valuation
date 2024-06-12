@@ -11,11 +11,10 @@ This project aims to automate the property valuation process using data-driven m
 
 ## Getting Started
 ### Prerequisites
-- Python 3.x
 - Required Python packages (specified in requirements.txt)
 
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your_username/automated-property-valuation.git
+   git clone https://github.com/notsocertain/automated-property-valuation.git
 
