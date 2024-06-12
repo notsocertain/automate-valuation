@@ -387,6 +387,18 @@ print(df_three.iloc[2])
 df_three.at[2, 'Plot Area (sqm.)'] = round(df_three['Plot Area (sqm.)'][:-1].sum(),2)
 df_three.at[2, 'Area in Sq.ft.'] = round(df_three['Area in Sq.ft.'][:-1].sum(),2)
 df_three.at[2, 'Area in Ropani.'] = round(df_three['Area in Ropani.'][:-1].sum(),2)
+# Function to sum the parts of 'Area in (R-A-P-D)'
+def sum_r_a_p_d(values):
+    r, a, p, d = 0, 0, 0, 0.0
+    for value in values:
+        parts = value.split('-')
+        r += int(parts[0])
+        a += int(parts[1])
+        p += int(parts[2])
+        d += round(float(parts[3]))
+    return f'{r}-{a}-{p}-{d:.3f}'
+
+df_three.at[2, 'Area in (R-A-P-D)'] = sum_r_a_p_d(df_three['Area in (R-A-P-D)'][:-1])
 
 
 print(df_three.iloc[2])
@@ -463,5 +475,27 @@ print(f"Document saved at: {file_path}")
 
 
 plot
-list(df)
+print(list(df))
+print(final)
+print(rateAdopted)
+print(total)
+list(df_three)
+ropani_total =df_three['Area in (R-A-P-D)'].iloc[-1]
+ropani_total
+
+# # weightedAverage  marketRate
+
+
+# # Function to sum the parts of 'Area in (R-A-P-D)'
+# def sum_r_a_p_d(values):
+#     r, a, p, d = 0, 0, 0, 0.0
+#     for value in values:
+#         parts = value.split('-')
+#         r += int(parts[0])
+#         a += int(parts[1])
+#         p += int(parts[2])
+#         d += float(parts[3])
+#     return f'{r}-{a}-{p}-{d:.3f}'
+
+# df.at[2, 'Area in (R-A-P-D)'] = sum_r_a_p_d(df['Area in (R-A-P-D)'][:-1])
 
