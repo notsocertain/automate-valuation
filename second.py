@@ -15,6 +15,7 @@ from docx import Document
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from docx.shared import Inches
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 # Import the AreaConverter class from the modules.py file
 from module import AreaConverter, AreaHelper
@@ -61,8 +62,8 @@ data = {
     "address_client": ["Kanakai Ward No.04, Ilam","Kanakai Ward No.04, Ilam"],
     "owner": ["Mr. Devi Prasad Bhandari","Mr. Devi Prasad Bhandari"],
     "S.N.": [1, 2],
-    "OWNERíS NAME": ["sameep", "sameep"],
-    "LOCATION (ADDRESS OF PROPERTY)": ["kapan", "kapan"],
+    "OWNERíS NAME": ["Mr. Devi Prasad Bhandari", "Mr. Devi Prasad Bhandari"],
+    "LOCATION (ADDRESS OF PROPERTY)": ["Soyang Ward No.04, Ilam", "Soyang Ward No.04, Ilam"],
     "OWNERSHIP_TYPE": ["single", "single"],
     "PLOT NO.": [555, 666],
     "ctzno": ["641/3269","641/3269"],
@@ -168,7 +169,7 @@ for i, row in df.iterrows():
             df.at[i, "AREA(rapd)"] = m2_to_rapd(row["AREA(m2)"])
 
 
-#1 Ropani= 16 Aana 
+# 1 Ropani= 16 Aana 
 # 1 Aana = 4 Paisa 
 # 1 Paisa = 4 Daam 
 
@@ -388,6 +389,7 @@ df_three.at[2, 'Plot Area (sqm.)'] = round(df_three['Plot Area (sqm.)'][:-1].sum
 df_three.at[2, 'Area in Sq.ft.'] = round(df_three['Area in Sq.ft.'][:-1].sum(),2)
 df_three.at[2, 'Area in Ropani.'] = round(df_three['Area in Ropani.'][:-1].sum(),2)
 # Function to sum the parts of 'Area in (R-A-P-D)'
+# Function to sum the parts of 'Area in (R-A-P-D)'
 def sum_r_a_p_d(values):
     r, a, p, d = 0, 0, 0, 0.0
     for value in values:
@@ -395,8 +397,22 @@ def sum_r_a_p_d(values):
         r += int(parts[0])
         a += int(parts[1])
         p += int(parts[2])
-        d += round(float(parts[3]))
-    return f'{r}-{a}-{p}-{d:.3f}'
+        d += float(parts[3])
+    
+    # Convert Daam to Paisa
+    p += int(d // 4)
+    d = round(d % 4)  # Round off Daam
+
+    # Convert Paisa to Aana
+    a += int(p // 4)
+    p = p % 4
+
+    # Convert Aana to Ropani
+    r += int(a // 16)
+    a = a % 16
+
+    return f'{r}-{a}-{p}-{d}'
+
 
 df_three.at[2, 'Area in (R-A-P-D)'] = sum_r_a_p_d(df_three['Area in (R-A-P-D)'][:-1])
 
@@ -466,9 +482,77 @@ create_table(doc, "The minimum area is taken for valuation", df_three)
 
 
 #----------
+doc.add_heading('VALUATION TABLE OF LAND',0)
+
+# Create a table with 11 rows and 2 columns
+table = doc.add_table(rows=11, cols=2)
+table.style = 'Table Grid'
+
+# Fill the table
+headers = [
+    "Plot No.",
+    "* Description of Land",
+    "* Total Area On Ownership Document:",
+    "* Actual Area verified on site by Measurement:",
+    "* Net Area considered for Valuation :",
+    "* Land Rate Adopted in this Valuation (Rs./Ropani) :",
+    "* Gross Value of Land (Rs.) :",
+    "* Deduction, if any (Rs.) :",
+    "* Net Value of Land (Rs.) :",
+    "Total Value (Rs.) :",
+    "Say (Rs.) :"
+]
+
+plot
+type(plot)
+print(list(df))
+print(final)
+print(rateAdopted)
+print(total)
+list(df_three)
+description_of_land ="Hill land Type"
+total_area_ownership= str(total)
+ropani_total =df_three['Area in (R-A-P-D)'].iloc[-1]
+net_area_valuation =df_three['Area in Ropani.'].iloc[-1]
+net_area_valuation= str(net_area_valuation)
+land_rate_valuation= str(rateAdopted)
+gross_value_land= str(final)
+gross_value_land
+deduction = "0.00"
+print(deduction)
+
+values = [
+    plot,
+    description_of_land,
+    total_area_ownership,
+    total_area_ownership,
+    net_area_valuation,
+    land_rate_valuation,
+    gross_value_land,
+    deduction,
+    gross_value_land,
+    gross_value_land,
+    gross_value_land
+]
+
+for i in values:
+    print(type(i))
+print('hello')
+
+for i, (header, value) in enumerate(zip(headers, values)):
+    row_cells = table.rows[i].cells
+    row_cells[0].text = header
+    row_cells[1].text = value
+
+    for cell in row_cells:
+        set_cell_border(cell, top="single", left="single", bottom="single", right="single")
+        cell.paragraphs[0].paragraph_format.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+
+
+#-------------
 
 # Save the document
-file_path = "Land_Rate_Report_with_Borders.docx"
+file_path = "FINALLLLLL.docx"
 doc.save(file_path)
 
 print(f"Document saved at: {file_path}")
@@ -482,6 +566,8 @@ print(total)
 list(df_three)
 ropani_total =df_three['Area in (R-A-P-D)'].iloc[-1]
 ropani_total
+
+
 
 # # weightedAverage  marketRate
 
